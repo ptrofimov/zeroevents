@@ -1,0 +1,11 @@
+{
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/events": "4.2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "ZeroEvents": "src"
+        }
+    }
+}
