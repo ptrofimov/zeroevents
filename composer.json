@@ -3,6 +3,9 @@
         "php": ">=5.4.0",
         "illuminate/events": "4.2.*"
     },
+    "require-dev": {
+        "moriony/php-zmq-stubs": "dev-master"
+    },
     "autoload": {
         "psr-0": {
             "ZeroEvents": "src"
