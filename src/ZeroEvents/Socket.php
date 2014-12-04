@@ -1,30 +1,46 @@
 <?php
 namespace ZeroEvents;
 
-class Socket //extends \ZMQSocket
+use ZeroEvents\Serializer\JsonSerializer;
+use ZeroEvents\Serializer\SerializerInterface;
+
+class Socket extends \ZMQSocket
 {
+    /**
+     * Socket name
+     *
+     * @var string
+     */
     private $name;
 
-    public function __construct($name)
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    public function __construct($name, SerializerInterface $serializer = null)
     {
         $this->name = $name;
-//        parent::__construct(new \ZMQContext(1, false), \ZMQ::SOCKET_DEALER);
+        $this->serializer = $serializer ? : new JsonSerializer;
+
+        parent::__construct(new \ZMQContext(1, false), \ZMQ::SOCKET_DEALER);
     }
 
-    public function push(/*array $frames*/)
+    public function push($event, array $payload)
     {
-        var_dump($this->name);
-//        if ($this->sendMulti($frames) === false) {
-//            throw new \ZMQException("Failed to send event: timeout expired");
-//        }
+        $frames = $this->serializer->serialize($event, $payload);
+
+        if ($this->sendMulti($frames) === false) {
+            throw new \ZMQException("Failed to send event: timeout expired");
+        }
     }
 
     public function pull()
     {
-        if (($reply = $this->recvMulti()) === false) {
+        if (($frames = $this->recvMulti()) === false) {
             throw new \ZMQException('Failed to get reply: timeout expired');
         }
 
-        return $reply;
+        return $this->serializer->unserialize($frames);
     }
 }

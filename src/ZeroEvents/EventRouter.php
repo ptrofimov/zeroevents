@@ -24,7 +24,7 @@ class EventRouter
     private $handlers = [];
 
     /**
-     * @param array $handlers Array of callables or Socket instances
+     * @param array $handlers Array of sockets or callables
      */
     public function __construct(array $handlers = [])
     {
@@ -45,8 +45,8 @@ class EventRouter
     public function route($event, $handler)
     {
         if ($handler instanceof Socket) {
-            $handler = function ($payload) use ($handler) {
-                $handler->push(Event::firing(), $payload);
+            $handler = function () use ($handler) {
+                $handler->push(Event::firing(), func_get_args());
             };
         }
         if (!is_callable($handler)) {
