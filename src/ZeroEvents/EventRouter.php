@@ -52,7 +52,7 @@ class EventRouter
         if (!is_callable($handler)) {
             throw new \InvalidArgumentException('Handler must be socket or callable');
         }
-        $this->handlers = ['event' => $event, 'handler' => $handler];
+        $this->handlers[] = ['event' => $event, 'handler' => $handler];
 
         return $this;
     }
