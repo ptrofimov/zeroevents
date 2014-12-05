@@ -2,6 +2,7 @@
 namespace ZeroEvents\Connector;
 
 use ZeroEvents\Socket;
+use Illuminate\Support\Facades\Config;
 
 class DefaultConnector implements ConnectorInterface
 {
