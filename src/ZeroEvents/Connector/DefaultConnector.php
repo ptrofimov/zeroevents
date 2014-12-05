@@ -14,9 +14,9 @@ class DefaultConnector implements ConnectorInterface
     /**
      * @param string $name
      */
-    public function __construct($name)
+    public function __construct($name, array $config = [])
     {
-        $config = Config::get('zeroevents');
+        $config = $config ? : Config::get('zeroevents');
 
         $this->config = array_merge(
             [
@@ -27,7 +27,7 @@ class DefaultConnector implements ConnectorInterface
                 'bind' => null,
                 'connect' => [],
             ],
-            $config[$name]
+            array_get($config, $name, [])
         );
     }
 

@@ -1,6 +1,7 @@
 <?php
 namespace ZeroEvents;
 
+use Illuminate\Support\Facades\Event;
 use ZeroEvents\Serializer\JsonSerializer;
 use ZeroEvents\Connector\DefaultConnector;
 use ZeroEvents\Connector\ConnectorInterface;
@@ -18,15 +19,25 @@ class Socket extends \ZMQSocket
      */
     private $serializer;
 
-    public function __construct($name, ConnectorInterface $connector = null, SerializerInterface $serializer = null)
+    /**
+     * @param string $name
+     * @param ConnectorInterface $connector
+     * @param SerializerInterface $serializer
+     * @return self
+     */
+    public static function get($name, ConnectorInterface $connector = null, SerializerInterface $serializer = null)
     {
-        $this->connector = $connector ? : new DefaultConnector($name);
-        $this->serializer = $serializer ? : new JsonSerializer;
+        $connector = $connector ? : new DefaultConnector($name);
 
-        parent::__construct($this->connector->context(), $this->connector->socketType());
+        $socket = new static($connector->context(), $connector->socketType());
+
+        $socket->connector = $connector;
+        $socket->serializer = $serializer ? : new JsonSerializer;
+
+        return $socket;
     }
 
-    private function connector()
+    public function connector()
     {
         if ($this->connector) {
             $this->connector->connect($this);
@@ -34,7 +45,7 @@ class Socket extends \ZMQSocket
         }
     }
 
-    public function push($event, array $payload)
+    public function push($event, array $payload = [])
     {
         $this->connector();
 
@@ -54,5 +65,12 @@ class Socket extends \ZMQSocket
         }
 
         return $this->serializer->unserialize($frames);
+    }
+
+    public function pullAndFire()
+    {
+        $message = $this->pull();
+
+        Event::fire($message['event'], $message['payload']);
     }
 }

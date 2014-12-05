@@ -33,14 +33,14 @@ class EventService
         $poll = new \ZMQPoll;
         $read = $write = [];
         foreach ($this->listen as $socket) {
+            $socket->connector();
             $poll->add($socket, \ZMQ::POLL_IN);
         }
         while ($this->processing) {
             try {
                 $poll->poll($read, $write);
                 foreach ($read as $socket) {
-                    $message = $socket->pull();
-                    Event::fire($message['event'], $message['payload']);
+                    $socket->pullAndFire();
                 }
             } catch (\ZMQPollException $ex) {
                 if ($ex->getCode() == 4) { //  4 == EINTR, interrupted system call
