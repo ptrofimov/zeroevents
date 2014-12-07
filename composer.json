@@ -1,4 +1,6 @@
 {
+    "name": "ptrofimov/zeroevents",
+    "description": "Events between processes. Built on top of Illuminate\\Events and ZeroMQ",
     "require": {
         "php": ">=5.4.0",
         "illuminate/events": "4.2.*"
