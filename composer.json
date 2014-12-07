@@ -1,6 +1,8 @@
 {
     "name": "ptrofimov/zeroevents",
     "description": "Events between processes. Built on top of Illuminate\\Events and ZeroMQ",
+    "keywords": ["laravel", "illuminate", "events", "zeromq", "zmq"],
+    "license": "MIT",
     "require": {
         "php": ">=5.4.0",
         "illuminate/events": "4.2.*"
