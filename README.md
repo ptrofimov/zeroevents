@@ -3,6 +3,50 @@ zeroevents
 
 Events between processes. Built on top of Illuminate\Events and ZeroMQ
 
+## Installation
+
+* 1. Install package using [composer](https://getcomposer.org/)
+```
+composer require ptrofimov/zeroevents:*
+```
+* 2. Copy config from vendor directory to your project. Or use [laravel publish](http://laravel.com/docs/4.2/packages#package-configuration)
+```
+cp vendor/ptrofimov/zeroevents/config/zeroevents.php ./app/config/
+```
+* 3. Define addresses of required sockets in the config. More information about types and abilities of sockets you could find [here](http://zguide.zeromq.org/page:all#toc11)
+
+## Usage
+
+* 1. **In first process:** subscribe EventRouter to desired events. For each define socket where events will be transferred to.
+
+```php
+Event::subscribe(
+    new EventRouter([
+        'something.*' => Socket::get('service')
+    ])
+);
+```
+
+* 2. **In second process:** define listeners for events.
+
+```php
+Event::listen('*', function () {
+    dd(['event' => Event::firing(), 'payload' => func_get_args()]);
+});
+```
+
+* 3. **In second process:** run event service that will listen to specified sockets and fire events.
+
+```php
+(new EventService([
+    Socket::get('service.listen')
+]))->run();
+```
+
+That's it. Each time the event will be fired in first process, that will be transferred to the second process and be fired there as well.
+
+You could see also an example for [laravel](example/laravel.php) and [non-laravel](example/non-laravel.php) based projects.
+
 ## License
 
 Copyright (c) 2014 Petr Trofimov
