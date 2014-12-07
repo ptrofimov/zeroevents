@@ -7,7 +7,7 @@ Events between processes. Built on top of Illuminate\Events and ZeroMQ
 
 * 1. Install package using [composer](https://getcomposer.org/)
 ```
-composer require ptrofimov/zeroevents:*
+composer require ptrofimov/zeroevents:1.*
 ```
 * 2. Copy config from vendor directory to your project. Or use [laravel publish](http://laravel.com/docs/4.2/packages#package-configuration)
 ```
@@ -17,7 +17,7 @@ cp vendor/ptrofimov/zeroevents/config/zeroevents.php ./app/config/
 
 ## Usage
 
-* 1. **In first process:** subscribe EventRouter to desired events. For each define socket where events will be transferred to.
+* 1. **In the first process:** subscribe EventRouter to desired events. For each define socket where events will be transferred to.
 
 ```php
 Event::subscribe(
@@ -27,7 +27,7 @@ Event::subscribe(
 );
 ```
 
-* 2. **In second process:** define listeners for events.
+* 2. **In the second process:** define listeners for events.
 
 ```php
 Event::listen('*', function () {
@@ -35,7 +35,7 @@ Event::listen('*', function () {
 });
 ```
 
-* 3. **In second process:** run event service that will listen to specified sockets and fire events.
+* 3. **In the second process:** run event service that will listen to specified sockets and fire events.
 
 ```php
 (new EventService([
