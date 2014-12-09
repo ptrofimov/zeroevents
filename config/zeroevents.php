@@ -20,6 +20,8 @@ return [
 
     'service' => [
 
+        'push_timeout' => 2000,
+
         /*
          * Socket type
          *

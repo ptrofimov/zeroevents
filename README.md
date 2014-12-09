@@ -47,6 +47,14 @@ That's it. Each time the event will be fired in first process, that will be tran
 
 You could see also an example for [laravel](example/laravel.php) and [non-laravel](example/non-laravel.php) based projects.
 
+## Running tests
+
+* 1. Install [phpunit](https://phpunit.de/getting-started.html)
+* 2. Run tests with phpunit
+```
+phpunit --bootstrap vendor/autoload.php tests
+```
+
 ## License
 
 Copyright (c) 2014 Petr Trofimov

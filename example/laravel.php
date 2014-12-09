@@ -1,8 +1,8 @@
 <?php
 require_once(dirname(__DIR__) . '/vendor/autoload.php');
 
-use ZeroEvents\Socket;
 use ZeroEvents\EventRouter;
+use ZeroEvents\EventSocket;
 use ZeroEvents\EventService;
 
 /*
@@ -12,7 +12,7 @@ function publisher()
 {
     Event::subscribe(
         new EventRouter([
-            'something.*' => Socket::get('service')
+            'something.*' => EventSocket::get('service')
         ])
     );
 
@@ -28,9 +28,9 @@ function subscriber()
         dd(['event' => Event::firing(), 'payload' => func_get_args()]);
     });
 
-    (new EventService([
-        Socket::get('service.listen')
-    ]))->run();
+    (new EventService)
+        ->listen(EventSocket::get('service.listen'))
+        ->run();
 }
 
 if (!$pid = pcntl_fork()) {
