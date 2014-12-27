@@ -142,4 +142,32 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
             $event
         );
     }
+
+    public function testPushError()
+    {
+        $socket = $this->socket();
+
+        Event::listen('zeroevents.push.error', function ($object, $event, $payload, $address) use ($socket) {
+            $this->assertSame($socket, $object);
+            $this->assertSame('request.event', $event);
+            $this->assertSame([], $payload);
+            $this->assertNull($address);
+            return 'push error';
+        });
+
+        $this->assertSame('push error', $socket->push('request.event'));
+    }
+
+    public function testPullError()
+    {
+        $socket = $this->socket();
+        $socket->connect('ipc://' . sys_get_temp_dir() . '/test-push.ipc');
+
+        Event::listen('zeroevents.pull.error', function ($object) use ($socket) {
+            $this->assertSame($socket, $object);
+            return 'pull error';
+        });
+
+        $this->assertSame('pull error', $socket->pull());
+    }
 }
