@@ -55,6 +55,48 @@ You could see also an example for [laravel](example/laravel.php) and [non-larave
 phpunit --bootstrap vendor/autoload.php tests
 ```
 
+## EventSocket class
+
+EventSocket class is inherited from ZMQSocket. Its supports all native methods like connect and send,
+plus it adds methods for sending and receiving events.
+
+### Methods
+
+* **encode**(string *event*, array *payload*) - serialize event and payload into array of frames before sending
+ * event goes as string in the first frame of message
+ * payload is serialized in JSON and goes in the following frames of message
+ * encode method is used in **push** method
+* **decode**(array *frames*) - unserialize event and payload from array of frames after receiving
+ * return array [event, payload]
+ * event is supposed to go as string in the first frame of message
+ * payload is supposed to go as serialized in JSON in the following frames of message
+ * decode method is used in **pull** method
+
+### Connecting socket
+
+You can use usual way to connect to socket via calling the constructor of ZMQSocket
+or, better, use **EventListener** that gives you connected socket on the base of options from config.
+
+```php
+use ZeroEvents\EventSocket;
+
+$socket = new EventSocket(new ZMQContext, ZMQ::SOCKET_PUSH);
+$socket->connect('ipc:///var/tmp/test.ipc');
+```
+
+### Pushing events
+
+It is recommended to listen to events that occur during sending of the message (ttl expired, out of connection)
+to handle them.
+
+```php
+Event::listen('zeroevents.push.error', function () {
+    // logging or something else
+});
+
+$socket->push('event', ['payload']);
+```
+
 ## License
 
 Copyright (c) 2014 Petr Trofimov
