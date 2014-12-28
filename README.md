@@ -93,6 +93,87 @@ Event::listen('zeroevents.push.error', function () {
 $socket->push('event', ['payload']);
 ```
 
+## EventListener class
+
+EventListener class is supposed to be passed to event dispatcher as listener callback.
+It has magic method **__invoke**, that is called, when an event is fired.
+EventListener creates EventSocket instance on-demand (lazy connection) and call method **EventSocket::push**.
+
+```php
+Event::listen('my.events.*', new EventListener('my.socket.config.key'));
+```
+
+Constructor accepts either string (config key) or array of options.
+
+### Connection options
+
+```php
+$options = [
+
+    'example.connection' => [
+
+        /*
+         * Number of io-threads in context, default = 1
+         */
+
+        'threads' => 1,
+
+        /*
+         * Persistent context is stored over multiple requests, default = false
+         */
+
+        'is_persistent' => false,
+
+        /*
+         * Socket type
+         *
+         * Full list of available types http://php.net/manual/en/class.zmq.php
+         * Description of sockets http://zguide.zeromq.org/page:all#toc11
+         */
+
+        'socket_type' => ZMQ::SOCKET_PUSH,
+
+        /*
+         * Default options for ZeroMQ socket
+         */
+
+        'socket_options' => [
+            ZMQ::SOCKOPT_LINGER => 2000, // wait before disconnect (ms)
+            ZMQ::SOCKOPT_SNDTIMEO => 2000, // send message timeout (ms)
+            ZMQ::SOCKOPT_RCVTIMEO => 2000, // receive message timeout (ms)
+        ],
+
+        /*
+         * Addresses to bind. Only one process can bind address
+         *
+         * About available transports (inproc, ipc, tcp) http://zguide.zeromq.org/page:all#toc13
+         */
+
+        'bind' => [
+            'tcp://127.0.0.1:5555',
+        ],
+
+        /*
+         * Addresses of sockets, the same time can be connected multiple addresses
+         *
+         * About available transports (inproc, ipc, tcp) http://zguide.zeromq.org/page:all#toc13
+         */
+
+        'connect' => [
+            'tcp://127.0.0.1:5555',
+        ],
+
+        /*
+         * Type of events to subscribe. Events masks (*) are not here supported.
+         *
+         * Only useful for SOCKET_SUB socket type
+         */
+
+        'subscribe' => 'my.events',
+    ],
+];
+```
+
 ## License
 
 Copyright (c) 2014 Petr Trofimov

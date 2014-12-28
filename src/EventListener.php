@@ -79,7 +79,7 @@ class EventListener
         foreach ((array) $this->options['connect'] as $dsn) {
             $socket->connect($dsn);
         }
-        if ($address = $this->options['subscribe']) {
+        foreach ((array) $this->options['subscribe'] as $address) {
             $socket->setSockOpt(\ZMQ::SOCKOPT_SUBSCRIBE, $address);
         }
 
