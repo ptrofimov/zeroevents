@@ -15,35 +15,31 @@ cp vendor/ptrofimov/zeroevents/config/zeroevents.php ./app/config/
 ```
 * 3. Define addresses of required sockets in the config. More information about types and abilities of sockets you could find [here](http://zguide.zeromq.org/page:all#toc11)
 
-## Usage
+## Quick Introduction
 
-* 1. **In the first process:** subscribe EventRouter to desired events. For each define socket where events will be transferred to.
+* 1. **In the first process:** subscribe EventListener to desired events.
 
 ```php
-Event::subscribe(
-    new EventRouter([
-        'something.*' => Socket::get('service')
-    ])
-);
+Event::listen('my.events.*', new EventListener(['connect' => 'ipc://my.ipc']));
 ```
 
-* 2. **In the second process:** define listeners for events.
+In EventListener constructor could be passed either array of options (will be merged with default options)
+or string (path to options for Config::get())
+
+* 2. **In the second process:** define listeners for events. And run event service that will listen to messages
+on socket and fire incoming events.
 
 ```php
-Event::listen('*', function () {
-    dd(['event' => Event::firing(), 'payload' => func_get_args()]);
+Event::listen('my.events.*', function () {
+    echo 'Catched event:', Event::firing(), PHP_EOL;
 });
+
+(new EventService)
+    ->listen(new EventListener(['bind' => 'ipc://my.ipc']))
+    ->run();
 ```
 
-* 3. **In the second process:** run event service that will listen to specified sockets and fire events.
-
-```php
-(new EventService([
-    Socket::get('service.listen')
-]))->run();
-```
-
-That's it. Each time the event will be fired in first process, that will be transferred to the second process and be fired there as well.
+That's it. Each time the event is fired in first process, that will be transferred to the second process and be fired there as well.
 
 You could see also an example for [laravel](example/laravel.php) and [non-laravel](example/non-laravel.php) based projects.
 
