@@ -40,16 +40,18 @@ class EventListener
         );
     }
 
+    /**
+     * Connect socket if not yet connected and return
+     *
+     * @return EventSocket
+     */
     public function socket()
     {
         return $this->socket ? : $this->connect();
     }
 
-    public function context(\ZMQContext $context = null)
+    public function context()
     {
-        if ($context) {
-            $this->context = $context;
-        }
         if (!$this->context) {
             $this->context = new \ZMQContext($this->options['threads'], $this->options['is_persistent']);
         }
@@ -60,7 +62,7 @@ class EventListener
     public function connect()
     {
         $socket = new EventSocket($this->context(), $this->options['socket_type']);
-        foreach ($this->options['options'] as $key => $value) {
+        foreach ($this->options['socket_options'] as $key => $value) {
             $socket->setSockOpt($key, $value);
         }
         if ($dsn = $this->options['bind']) {
