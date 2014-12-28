@@ -6,31 +6,37 @@ use Illuminate\Support\Facades\Config;
 
 class EventListener
 {
-    protected $config;
+    /**
+     * @var array
+     */
+    protected $options = [
+        'threads' => 1,
+        'is_persistent' => false,
+        'socket_type' => \ZMQ::SOCKET_DEALER,
+        'socket_options' => [],
+        'bind' => null,
+        'connect' => [],
+        'subscribe' => null,
+    ];
 
+    /**
+     * @var \ZMQContext|null
+     */
     protected $context;
 
+    /**
+     * @var EventSocket|null
+     */
     protected $socket;
 
-    public function __construct($socket)
+    /**
+     * @param array|string $options
+     */
+    public function __construct($options)
     {
-        if (is_string($socket)) {
-            $this->config = Config::get($socket);
-        } elseif (is_array($socket)) {
-            $this->config = $socket;
-        } elseif ($socket instanceof EventSocket) {
-            $this->socket = $socket;
-        }
-        $this->config = array_merge(
-            [
-                'threads' => 1,
-                'is_persistent' => false,
-                'options' => array_get($config, 'default_options', []),
-                'socket_type' => null,
-                'bind' => null,
-                'connect' => [],
-            ],
-            array_get($config, $name, [])
+        $this->options = array_merge(
+            $this->options,
+            is_array($options) ? $options : Config::get($options)
         );
     }
 
@@ -45,7 +51,7 @@ class EventListener
             $this->context = $context;
         }
         if (!$this->context) {
-            $this->context = new \ZMQContext($this->config['threads'], $this->config['is_persistent']);
+            $this->context = new \ZMQContext($this->options['threads'], $this->options['is_persistent']);
         }
 
         return $this->context;
@@ -53,17 +59,17 @@ class EventListener
 
     public function connect()
     {
-        $socket = new EventSocket($this->context(), $this->config['socket_type']);
-        foreach ($this->config['options'] as $key => $value) {
+        $socket = new EventSocket($this->context(), $this->options['socket_type']);
+        foreach ($this->options['options'] as $key => $value) {
             $socket->setSockOpt($key, $value);
         }
-        if ($dsn = $this->config['bind']) {
+        if ($dsn = $this->options['bind']) {
             $socket->bind($dsn);
             if (substr($dsn, 0, 3) == 'ipc') {
                 chmod(str_replace('ipc://', '', $dsn), 0777);
             }
         }
-        foreach ($this->config['connect'] as $dsn) {
+        foreach ((array) $this->options['connect'] as $dsn) {
             $socket->connect($dsn);
         }
         // todo subscribe
