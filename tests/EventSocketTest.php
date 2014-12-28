@@ -76,7 +76,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
 
     public function testPushPull()
     {
-        $dsn = 'ipc://' . sys_get_temp_dir() . '/test-push.ipc';
+        $dsn = 'ipc://test-push-pull.ipc';
 
         if (!pcntl_fork()) {
             $socket = $this->socket();
@@ -107,7 +107,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
 
     public function testPullAndFire()
     {
-        $dsn = 'ipc://' . sys_get_temp_dir() . '/test-push.ipc';
+        $dsn = 'ipc://test-pull-and-fire.ipc';
 
         if (!pcntl_fork()) {
             $socket = $this->socket();
@@ -163,7 +163,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
     public function testPullError()
     {
         $socket = $this->socket();
-        $socket->connect('ipc://' . sys_get_temp_dir() . '/test-push.ipc');
+        $socket->connect('ipc://test-pull-error.ipc');
 
         Event::listen('zeroevents.pull.error', function ($object) use ($socket) {
             $this->assertSame($socket, $object);
@@ -177,7 +177,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
 
     public function testRouter()
     {
-        $dsn = 'ipc://' . sys_get_temp_dir() . '/test-router.ipc';
+        $dsn = 'ipc://test-router.ipc';
 
         if (!pcntl_fork()) {
             $socket = $this->socket(\ZMQ::SOCKET_ROUTER);

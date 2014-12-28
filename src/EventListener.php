@@ -50,6 +50,11 @@ class EventListener
         return $this->socket ? : $this->connect();
     }
 
+    /**
+     * Return ZMQContext instance with specified in constructor options
+     *
+     * @return \ZMQContext
+     */
     public function context()
     {
         if (!$this->context) {
