@@ -24,4 +24,35 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($context, $listener->context());
         $this->assertFalse($context->isPersistent());
     }
+
+    public function testConnect()
+    {
+        $listener = new EventListener([
+            'socket_type' => \ZMQ::SOCKET_PUSH,
+            'socket_options' => [
+                \ZMQ::SOCKOPT_SNDHWM => 2000,
+            ],
+            'bind' => 'ipc://test-connect-bind.ipc',
+            'connect' => [
+                'ipc://test-connect-1.ipc',
+                'ipc://test-connect-2.ipc',
+            ],
+        ]);
+        $socket = $listener->socket();
+
+        $this->assertSame(\ZMQ::SOCKET_PUSH, $socket->getSocketType());
+        $this->assertSame(2000, $socket->getSockOpt(\ZMQ::SOCKOPT_SNDHWM));
+        $this->assertSame(
+            [
+                'connect' => [
+                    'ipc://test-connect-1.ipc',
+                    'ipc://test-connect-2.ipc',
+                ],
+                'bind' => [
+                    'ipc://test-connect-bind.ipc'
+                ],
+            ],
+            $socket->getEndpoints()
+        );
+    }
 }

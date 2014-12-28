@@ -70,7 +70,7 @@ class EventListener
         foreach ($this->options['socket_options'] as $key => $value) {
             $socket->setSockOpt($key, $value);
         }
-        if ($dsn = $this->options['bind']) {
+        foreach ((array) $this->options['bind'] as $dsn) {
             $socket->bind($dsn);
             if (substr($dsn, 0, 3) == 'ipc') {
                 chmod(str_replace('ipc://', '', $dsn), 0777);
