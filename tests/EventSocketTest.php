@@ -78,7 +78,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
     {
         $dsn = 'ipc://test-push-pull.ipc';
 
-        if (!pcntl_fork()) {
+        if (!$pid = pcntl_fork()) {
             $socket = $this->socket();
             $socket->bind($dsn);
             $socket->push('response.event', [$socket->pull()]);
@@ -103,13 +103,15 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
             ],
             $socket->pull()
         );
+
+        posix_kill($pid, SIGKILL);
     }
 
     public function testPullAndFire()
     {
         $dsn = 'ipc://test-pull-and-fire.ipc';
 
-        if (!pcntl_fork()) {
+        if (!$pid = pcntl_fork()) {
             $socket = $this->socket();
             $socket->bind($dsn);
             $socket->push('response.event', [$socket->pull()]);
@@ -141,6 +143,8 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
             ],
             $event
         );
+
+        posix_kill($pid, SIGKILL);
     }
 
     public function testPushError()
@@ -179,7 +183,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
     {
         $dsn = 'ipc://test-router.ipc';
 
-        if (!pcntl_fork()) {
+        if (!$pid = pcntl_fork()) {
             $socket = $this->socket(\ZMQ::SOCKET_ROUTER);
             $socket->bind($dsn);
             $event = $socket->pull();
@@ -194,5 +198,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         $event = $socket->pull();
 
         $this->assertFalse(is_null($event['payload'][0]['address']));
+
+        posix_kill($pid, SIGKILL);
     }
 }
