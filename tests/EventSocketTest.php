@@ -156,6 +156,8 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->assertSame('push error', $socket->push('request.event'));
+
+        Event::forget('zeroevents.push.error');
     }
 
     public function testPullError()
@@ -169,5 +171,28 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->assertSame('pull error', $socket->pull());
+
+        Event::forget('zeroevents.pull.error');
+    }
+
+    public function testRouter()
+    {
+        $dsn = 'ipc://' . sys_get_temp_dir() . '/test-router.ipc';
+
+        if (!pcntl_fork()) {
+            $socket = $this->socket(\ZMQ::SOCKET_ROUTER);
+            $socket->bind($dsn);
+            $event = $socket->pull();
+            $socket->push('response.event', [$event], $event['address']);
+            exit;
+        }
+
+        $socket = $this->socket();
+        $socket->connect($dsn);
+        $socket->push('request.event', ['source', 'parent']);
+
+        $event = $socket->pull();
+
+        $this->assertFalse(is_null($event['payload'][0]['address']));
     }
 }
