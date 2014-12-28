@@ -187,7 +187,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
             $socket = $this->socket(\ZMQ::SOCKET_ROUTER);
             $socket->bind($dsn);
             $event = $socket->pull();
-            $socket->push('response.event', [$event], $event['address']);
+            $socket->push('response.event', [base64_encode($event['address'])], $event['address']);
             exit;
         }
 
@@ -197,7 +197,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
 
         $event = $socket->pull();
 
-        $this->assertFalse(is_null($event['payload'][0]['address']));
+        $this->assertTrue(!empty($event['payload'][0]));
 
         posix_kill($pid, SIGKILL);
     }
