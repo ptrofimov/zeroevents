@@ -18,12 +18,12 @@ class EventService
     protected $pollTimeout = -1;
 
     /**
-     * @param EventSocket $socket
+     * @param EventListener $listener
      * @return self
      */
-    public function listen(EventSocket $socket)
+    public function listen(EventListener $listener)
     {
-        $this->listen = $socket;
+        $this->listen[] = $listener->socket();
 
         return $this;
     }
@@ -65,12 +65,17 @@ class EventService
         return $this;
     }
 
+    /**
+     * Main processing loop
+     *
+     * @throws \ZMQPollException
+     */
     public function run()
     {
         $poll = new \ZMQPoll;
         $readable = $writable = [];
         foreach ($this->listen as $socket) {
-            $poll->add($socket->connected(), \ZMQ::POLL_IN);
+            $poll->add($socket, \ZMQ::POLL_IN);
         }
         $processing = true;
         Event::listen('zeroevents.service.stop', function () use (&$processing) {
