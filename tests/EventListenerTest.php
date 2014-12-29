@@ -1,8 +1,19 @@
 <?php
 namespace ZeroEvents;
 
+use Illuminate\Container\Container;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Facade;
+
 class EventListenerTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        $container = new Container;
+        $container->bind('events', 'Illuminate\Events\Dispatcher');
+        Facade::setFacadeApplication($container);
+    }
+
     public function testSocket()
     {
         $listener = new EventListener(['connect' => 'ipc://test.ipc']);
@@ -54,5 +65,37 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
             ],
             $socket->getEndpoints()
         );
+    }
+
+    public function testInvoke()
+    {
+        $dsn = 'ipc://test-invoke.ipc';
+
+        if (!$pid = pcntl_fork()) {
+            $socket = (new EventListener(['bind' => $dsn]))->socket();
+            $socket->push('response.event', [$socket->pull()]);
+            exit;
+        }
+
+        $listener = new EventListener(['connect' => $dsn]);
+        Event::listen('request.event', $listener);
+        Event::fire('request.event', ['source', 'parent']);
+
+        $this->assertSame(
+            [
+                'event' => 'response.event',
+                'payload' => [
+                    [
+                        'event' => 'request.event',
+                        'payload' => ['source', 'parent'],
+                        'address' => null,
+                    ],
+                ],
+                'address' => null,
+            ],
+            $listener->socket()->pull()
+        );
+
+        posix_kill($pid, SIGKILL);
     }
 }

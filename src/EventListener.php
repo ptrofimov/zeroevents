@@ -86,6 +86,11 @@ class EventListener
         return $this->socket = $socket;
     }
 
+    /**
+     * Magic method for event dispatcher
+     *
+     * @return mixed
+     */
     public function __invoke()
     {
         return $this->socket()->push(Event::firing(), func_get_args());
