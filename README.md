@@ -36,8 +36,6 @@ Event::listen('my.events.*', function () {
 
 That's it. Each time the event is fired in first process, that will be transferred to the second process and be fired there as well.
 
-You could see also an example for [laravel](example/laravel.php) and [non-laravel](example/non-laravel.php) based projects.
-
 ## Running tests
 
 * 1. Install [phpunit](https://phpunit.de/getting-started.html)
