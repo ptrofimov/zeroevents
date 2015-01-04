@@ -49,4 +49,25 @@ class EventServiceTest extends \PHPUnit_Framework_TestCase
         pcntl_wait($status);
         posix_kill($pid, SIGKILL);
     }
+
+    public function testRunIdle()
+    {
+        $idle = 0;
+
+        Event::listen('zeroevents.service.idle', function () use (&$idle) {
+            if (++$idle >= 3) {
+                Event::fire('zeroevents.service.stop');
+            }
+        });
+
+        $t1 = microtime(true);
+
+        (new EventService)
+            ->listen(new EventListener(['bind' => 'ipc://test-run-idle.ipc']))
+            ->pollTimeout(400)
+            ->run();
+
+        $this->assertSame(3, $idle);
+        $this->assertTrue(microtime(true) - $t1 >= 1.2);
+    }
 }
