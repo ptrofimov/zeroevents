@@ -97,5 +97,6 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
         );
 
         posix_kill($pid, SIGKILL);
+        @unlink('test-invoke.ipc');
     }
 }

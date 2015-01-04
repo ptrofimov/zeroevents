@@ -23,18 +23,13 @@ class EventServiceTest extends \PHPUnit_Framework_TestCase
             $listener = new EventListener(['bind' => $dsn]);
 
             Event::listen('request.event', function () use ($listener) {
-//                $listener->socket()->push(Event::firing(), func_get_args());
-//                Event::fire('zeroevents.service.stop');
+                $listener->socket()->push(Event::firing(), func_get_args());
+                Event::fire('zeroevents.service.stop');
             });
 
-            try {
-                (new EventService)
-                    ->listen($listener)
-                    ->run();
-            } catch (\Exception $ex) {
-                var_dump($ex->__toString());
-            }
-
+            (new EventService)
+                ->listen($listener)
+                ->run();
             exit;
         }
 
@@ -44,20 +39,14 @@ class EventServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(
             [
-                'event' => 'response.event',
-                'payload' => [
-                    [
-                        'event' => 'request.event',
-                        'payload' => ['source', 'parent'],
-                        'address' => null,
-                    ],
-                ],
+                'event' => 'request.event',
+                'payload' => ['source', 'parent'],
                 'address' => null,
             ],
             $listener->socket()->pull()
         );
 
-//        pcntl_wait($status);
-//        posix_kill($pid, SIGKILL);
+        pcntl_wait($status);
+        posix_kill($pid, SIGKILL);
     }
 }

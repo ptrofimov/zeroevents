@@ -48,7 +48,7 @@ You could see also an example for [laravel](example/laravel.php) and [non-larave
 * 1. Install [phpunit](https://phpunit.de/getting-started.html)
 * 2. Run tests with phpunit
 ```
-phpunit --bootstrap vendor/autoload.php tests
+phpunit --bootstrap vendor/autoload.php --process-isolation tests
 ```
 
 ## EventSocket class

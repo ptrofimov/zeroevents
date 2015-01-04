@@ -105,6 +105,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         );
 
         posix_kill($pid, SIGKILL);
+        @unlink('test-push-pull.ipc');
     }
 
     public function testPullAndFire()
@@ -145,6 +146,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         );
 
         posix_kill($pid, SIGKILL);
+        @unlink('test-pull-and-fire.ipc');
     }
 
     public function testPushError()
@@ -200,5 +202,6 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(!empty($event['payload'][0]));
 
         posix_kill($pid, SIGKILL);
+        @unlink('test-router.ipc');
     }
 }
