@@ -11,8 +11,8 @@
         "moriony/php-zmq-stubs": "dev-master"
     },
     "autoload": {
-        "psr-0": {
-            "ZeroEvents": "src"
+        "psr-4": {
+            "ZeroEvents\\": "src"
         }
     }
 }
