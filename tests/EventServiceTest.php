@@ -70,4 +70,26 @@ class EventServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, $idle);
         $this->assertTrue(microtime(true) - $t1 >= 1.2);
     }
+
+    public function testListenToSignals()
+    {
+        $t1 = microtime(true);
+
+        if (!$pid = pcntl_fork()) {
+            (new EventService)
+                ->listen(new EventListener(['bind' => 'ipc://test-listen-to-signals.ipc']))
+                ->listenToSignals()
+                ->run();
+            exit;
+        }
+
+        sleep(1);
+        posix_kill($pid, SIGHUP);
+        sleep(1);
+        posix_kill($pid, SIGTERM);
+
+        pcntl_wait($status);
+
+        $this->assertTrue(microtime(true) - $t1 >= 2.0);
+    }
 }
