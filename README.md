@@ -5,15 +5,10 @@ Events between processes. Built on top of Illuminate\Events and ZeroMQ
 
 ## Installation
 
-* 1. Install package using [composer](https://getcomposer.org/)
+Install package using [composer](https://getcomposer.org/)
 ```
-composer require ptrofimov/zeroevents:1.*
+composer require ptrofimov/zeroevents:2.*
 ```
-* 2. Copy config from vendor directory to your project. Or use [laravel publish](http://laravel.com/docs/4.2/packages#package-configuration)
-```
-cp vendor/ptrofimov/zeroevents/config/zeroevents.php ./app/config/
-```
-* 3. Define addresses of required sockets in the config. More information about types and abilities of sockets you could find [here](http://zguide.zeromq.org/page:all#toc11)
 
 ## Quick Introduction
 
@@ -173,6 +168,38 @@ $options = [
     ],
 ];
 ```
+
+## EventService class
+
+Class is used to listen to incoming events and fire them.
+
+### Polling sockets
+
+EventService class is able to listen to several sockets the same time.
+
+```php
+(new EventService)
+    ->listen(new EventListener(['connect' => 'ipc://first.ipc']))
+    ->listen(new EventListener(['connect' => 'ipc://second.ipc']))
+    ->run();
+```
+
+### Idle events
+
+You can specify the polling time - max time that service waits for incoming events
+and if there are no such events, it fires **zeroevents.service.idle** event,
+which you can handle and execute your own code while there is no work for the service.
+
+### System signals
+
+EventService class has default handler for system POSIX signals.
+It ignores **SIGHUP**, and gracefully stops on **SIGTERM** and **SIGINT** signals.
+Sure, you could define your own system signal handler.
+
+### Stopping the service
+
+Normally, the service is being stopped by system signal.
+But you could easily stop the service by firing **zeroevents.service.stop** event.
 
 ## License
 
