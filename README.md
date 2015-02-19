@@ -155,6 +155,12 @@ $options = [
          */
 
         'subscribe' => 'my.events',
+
+        /*
+         * Send/wait confirmation after sending/receiving message
+         */
+
+        'confirmed' => false,
     ],
 ];
 ```

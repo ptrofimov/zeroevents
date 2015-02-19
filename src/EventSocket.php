@@ -11,6 +11,30 @@ use Illuminate\Support\Facades\Event;
 class EventSocket extends \ZMQSocket
 {
     /**
+     * Send/wait confirmation after sending/receiving message
+     *
+     * @var bool
+     */
+    private $confirmed = false;
+
+    /**
+     * Get/set confirmation flag
+     *
+     * @param bool|null $confirmed
+     * @return self
+     */
+    public function confirmed($confirmed = null)
+    {
+        if (is_null($confirmed)) {
+            return $this->confirmed;
+        }
+
+        $this->confirmed = $confirmed === true;
+
+        return $this;
+    }
+
+    /**
      * Push event to ZeroMQ socket
      *
      * @param string $event
@@ -28,6 +52,10 @@ class EventSocket extends \ZMQSocket
         if ($this->sendMulti($frames) === false) {
             return Event::until('zeroevents.push.error', [$this, $event, $payload, $address]);
         }
+
+        if ($this->confirmed && $event != 'zeroevents.confirmed') {
+            return $this->pull();
+        }
     }
 
     /**
@@ -42,8 +70,13 @@ class EventSocket extends \ZMQSocket
         }
 
         $address = $this->getSocketType() == \ZMQ::SOCKET_ROUTER ? array_shift($frames) : null;
+        $message = array_add($this->decode($frames), 'address', $address);
 
-        return array_add($this->decode($frames), 'address', $address);
+        if ($this->confirmed && $message['event'] != 'zeroevents.confirmed') {
+            $this->push('zeroevents.confirmed', [$message['event']]);
+        }
+
+        return $message;
     }
 
     /**
