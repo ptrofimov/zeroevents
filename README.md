@@ -36,14 +36,6 @@ Event::listen('my.events.*', function () {
 
 That's it. Each time the event is fired in first process, that will be transferred to the second process and be fired there as well.
 
-## Running tests
-
-* 1. Install [phpunit](https://phpunit.de/getting-started.html)
-* 2. Run tests with phpunit
-```
-phpunit --bootstrap vendor/autoload.php --process-isolation tests
-```
-
 ## EventSocket class
 
 EventSocket class is inherited from ZMQSocket. Its supports all native methods like connect and send,
@@ -201,7 +193,7 @@ But you could easily stop the service by firing **zeroevents.service.stop** even
 
 ## License
 
-Copyright (c) 2014 Petr Trofimov
+Copyright (c) 2015 Petr Trofimov
 
 MIT License
 
