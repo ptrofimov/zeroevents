@@ -21,6 +21,7 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('ZeroEvents\EventSocket', $socket);
         $this->assertSame($socket, $listener->socket());
+        $this->assertFalse($socket->confirmed());
     }
 
     public function testContext()
@@ -48,6 +49,7 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
                 'ipc://test-connect-1.ipc',
                 'ipc://test-connect-2.ipc',
             ],
+            'confirmed' => true,
         ]);
         $socket = $listener->socket();
 
@@ -65,6 +67,7 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
             ],
             $socket->getEndpoints()
         );
+        $this->assertTrue($socket->confirmed());
     }
 
     public function testInvoke()

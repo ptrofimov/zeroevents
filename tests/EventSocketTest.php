@@ -21,9 +21,9 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
     public function socket($type = null)
     {
         $socket = new EventSocket(new \ZMQContext(1, false), $type ? : \ZMQ::SOCKET_DEALER);
-        $socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 1000);
-        $socket->setSockOpt(\ZMQ::SOCKOPT_SNDTIMEO, 1000);
-        $socket->setSockOpt(\ZMQ::SOCKOPT_RCVTIMEO, 1000);
+        $socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 1000)
+            ->setSockOpt(\ZMQ::SOCKOPT_SNDTIMEO, 1000)
+            ->setSockOpt(\ZMQ::SOCKOPT_RCVTIMEO, 1000);
 
         return $socket;
     }
@@ -74,6 +74,15 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testConfimed()
+    {
+        $socket = $this->socket();
+
+        $this->assertFalse($socket->confirmed());
+        $this->assertSame($socket, $socket->confirmed(true));
+        $this->assertTrue($socket->confirmed());
+    }
+
     public function testPushPull()
     {
         $dsn = 'ipc://test-push-pull.ipc';
@@ -86,8 +95,8 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         }
 
         $socket = $this->socket();
-        $socket->connect($dsn);
-        $socket->push('request.event', ['source', 'parent']);
+        $socket->connect($dsn)
+            ->push('request.event', ['source', 'parent']);
 
         $this->assertSame(
             [
@@ -108,6 +117,38 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         @unlink('test-push-pull.ipc');
     }
 
+    public function testPushPullConfirmed()
+    {
+        $dsn = 'ipc://test-push-pull-confirmed.ipc';
+
+        if (!$pid = pcntl_fork()) {
+            $socket = $this->socket();
+            $socket->bind($dsn);
+            $socket->confirmed(true)
+                ->pull();
+            exit;
+        }
+
+        $message = $this->socket()
+            ->connect($dsn)
+            ->confirmed(true)
+            ->push('request.event', ['source', 'parent']);
+
+        $this->assertSame(
+            [
+                'event' => 'zeroevents.confirmed',
+                'payload' => [
+                    'request.event',
+                ],
+                'address' => null,
+            ],
+            $message
+        );
+
+        posix_kill($pid, SIGKILL);
+        @unlink('test-push-pull-confirmed.ipc');
+    }
+
     public function testPullAndFire()
     {
         $dsn = 'ipc://test-pull-and-fire.ipc';
@@ -120,8 +161,8 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         }
 
         $socket = $this->socket();
-        $socket->connect($dsn);
-        $socket->push('request.event', ['source', 'parent']);
+        $socket->connect($dsn)
+            ->push('request.event', ['source', 'parent']);
 
         $event = null;
         Event::listen('response.event', function () use (&$event) {
@@ -194,8 +235,8 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         }
 
         $socket = $this->socket();
-        $socket->connect($dsn);
-        $socket->push('request.event', ['source', 'parent']);
+        $socket->connect($dsn)
+            ->push('request.event', ['source', 'parent']);
 
         $event = $socket->pull();
 

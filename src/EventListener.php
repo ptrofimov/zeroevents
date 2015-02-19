@@ -17,6 +17,7 @@ class EventListener
         'bind' => null,
         'connect' => [],
         'subscribe' => null,
+        'confirmed' => false,
     ];
 
     /**
@@ -82,6 +83,7 @@ class EventListener
         foreach ((array) $this->options['subscribe'] as $address) {
             $socket->setSockOpt(\ZMQ::SOCKOPT_SUBSCRIBE, $address);
         }
+        $socket->confirmed($this->options['confirmed']);
 
         return $this->socket = $socket;
     }
