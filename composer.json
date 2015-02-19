@@ -8,7 +8,8 @@
         "illuminate/events": ">=4.2"
     },
     "require-dev": {
-        "moriony/php-zmq-stubs": "dev-master"
+        "moriony/php-zmq-stubs": "dev-master",
+        "phpunit/phpunit": "4.5.*"
     },
     "autoload": {
         "psr-4": {
