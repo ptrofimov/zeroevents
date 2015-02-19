@@ -7,7 +7,7 @@ Events between processes. Built on top of Illuminate\Events and ZeroMQ
 
 Install package using [composer](https://getcomposer.org/)
 ```
-composer require ptrofimov/zeroevents:2.*
+composer require ptrofimov/zeroevents:3.*
 ```
 
 ## Quick Introduction
