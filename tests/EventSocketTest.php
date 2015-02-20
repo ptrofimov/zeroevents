@@ -149,6 +149,38 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         @unlink('test-push-pull-confirmed.ipc');
     }
 
+    public function testDealerRouterConfirmed()
+    {
+        $dsn = 'ipc://test-dealer-router-confirmed.ipc';
+
+        if (!$pid = pcntl_fork()) {
+            $socket = $this->socket(\ZMQ::SOCKET_ROUTER);
+            $socket->bind($dsn);
+            $socket->confirmed(true)
+                ->pull();
+            exit;
+        }
+
+        $message = $this->socket(\ZMQ::SOCKET_DEALER)
+            ->connect($dsn)
+            ->confirmed(true)
+            ->push('request.event', ['source', 'parent']);
+
+        $this->assertSame(
+            [
+                'event' => 'zeroevents.confirmed',
+                'payload' => [
+                    'request.event',
+                ],
+                'address' => null,
+            ],
+            $message
+        );
+
+        posix_kill($pid, SIGKILL);
+        @unlink('test-dealer-router-confirmed.ipc');
+    }
+
     public function testPullAndFire()
     {
         $dsn = 'ipc://test-pull-and-fire.ipc';

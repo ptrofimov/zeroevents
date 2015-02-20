@@ -73,7 +73,7 @@ class EventSocket extends \ZMQSocket
         $message = array_add($this->decode($frames), 'address', $address);
 
         if ($this->confirmed && $message['event'] != 'zeroevents.confirmed') {
-            $this->push('zeroevents.confirmed', [$message['event']]);
+            $this->push('zeroevents.confirmed', [$message['event']], $message['address']);
         }
 
         return $message;
