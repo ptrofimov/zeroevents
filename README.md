@@ -1,7 +1,10 @@
 zeroevents
 ==========
 
-Events between processes. Built on top of Illuminate\Events and ZeroMQ
+Events between processes. Built on top of Illuminate\Events and ZeroMQ.
+
+It could be used for building distributed **PHP** applications
+and asynchronous **event** processing systems with **ZeroMQ** as transport for messages.
 
 ## Installation
 
@@ -38,8 +41,8 @@ That's it. Each time the event is fired in first process, that will be transferr
 
 ## EventSocket class
 
-EventSocket class is inherited from ZMQSocket. Its supports all native methods like connect and send,
-plus it adds methods for sending and receiving events.
+EventSocket PHP class is inherited from ZMQSocket. Its supports all native methods like connect and send,
+plus it adds methods for sending and receiving events with ZeroMQ.
 
 ### Methods
 
@@ -55,7 +58,7 @@ plus it adds methods for sending and receiving events.
 
 ### Connecting socket
 
-You can use usual way to connect to socket via calling the constructor of ZMQSocket
+You can use usual way to connect to ZeroMQ socket via calling the constructor of ZMQSocket
 or, better, use **EventListener** that gives you connected socket on the base of options from config.
 
 ```php
@@ -80,7 +83,7 @@ $socket->push('event', ['payload']);
 
 ## EventListener class
 
-EventListener class is supposed to be passed to event dispatcher as listener callback.
+EventListener PHP class is supposed to be passed to event dispatcher as listener callback.
 It has magic method **__invoke**, that is called, when an event is fired.
 EventListener creates EventSocket instance on-demand (lazy connection) and call method **EventSocket::push**.
 
