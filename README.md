@@ -1,6 +1,8 @@
 zeroevents
 ==========
 
+[![Latest Stable Version](https://poser.pugx.org/ptrofimov/zeroevents/v/stable)](https://packagist.org/packages/ptrofimov/zeroevents) [![Total Downloads](https://poser.pugx.org/ptrofimov/zeroevents/downloads)](https://packagist.org/packages/ptrofimov/zeroevents)  [![License](https://poser.pugx.org/ptrofimov/zeroevents/license)](https://packagist.org/packages/ptrofimov/zeroevents)
+
 Events between processes. Built on top of Illuminate\Events and ZeroMQ.
 
 It could be used for building distributed **PHP** applications
