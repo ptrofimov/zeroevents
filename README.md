@@ -1,7 +1,7 @@
 zeroevents
 ==========
 
-[![Latest Stable Version](https://poser.pugx.org/ptrofimov/zeroevents/v/stable)](https://packagist.org/packages/ptrofimov/zeroevents) [![Total Downloads](https://poser.pugx.org/ptrofimov/zeroevents/downloads)](https://packagist.org/packages/ptrofimov/zeroevents)  [![License](https://poser.pugx.org/ptrofimov/zeroevents/license)](https://packagist.org/packages/ptrofimov/zeroevents)
+[![Latest Stable Version](https://poser.pugx.org/ptrofimov/zeroevents/v/stable)](https://packagist.org/packages/ptrofimov/zeroevents) [![Total Downloads](https://poser.pugx.org/ptrofimov/zeroevents/downloads)](https://packagist.org/packages/ptrofimov/zeroevents)  [![License](https://poser.pugx.org/ptrofimov/zeroevents/license)](https://packagist.org/packages/ptrofimov/zeroevents) [![Build Status](https://travis-ci.org/Olden/zeroevents.svg?branch=travis-ci)](https://travis-ci.org/Olden/zeroevents)
 
 Events between processes. Built on top of Illuminate\Events and ZeroMQ.
 
