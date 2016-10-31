@@ -8,4 +8,6 @@ php:
 before_script:
   - composer install
 
+before_install: echo "extension = zmq.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
 script: vendor/bin/phpunit
