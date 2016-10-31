@@ -18,6 +18,11 @@ class EventSocket extends \ZMQSocket
     private $confirmed = false;
 
     /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * Get/set confirmation flag
      *
      * @param bool|null $confirmed
@@ -90,6 +95,19 @@ class EventSocket extends \ZMQSocket
     }
 
     /**
+     * Set serializer message frames
+     *
+     * @param SerializerInterface $serializer
+     * @return $this
+     */
+    public function setSerializer(SerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+
+        return $this;
+    }
+
+    /**
      * Transform event name and payload array into array of frames
      *
      * @param string $event
@@ -98,9 +116,7 @@ class EventSocket extends \ZMQSocket
      */
     public function encode($event, array $payload)
     {
-        return array_merge([$event], array_map(function ($value) {
-            return json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        }, $payload));
+        return array_merge([$event], $this->serializer->encode($payload));
     }
 
     /**
@@ -113,9 +129,7 @@ class EventSocket extends \ZMQSocket
     {
         return [
             'event' => array_shift($frames),
-            'payload' => array_map(function ($frame) {
-                return json_decode($frame, true);
-            }, $frames)
+            'payload' => $this->serializer->decode($frames)
         ];
     }
 }

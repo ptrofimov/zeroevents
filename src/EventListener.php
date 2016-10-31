@@ -18,6 +18,7 @@ class EventListener
         'connect' => [],
         'subscribe' => null,
         'confirmed' => false,
+        'serializer' => 'ZeroEvents\Serializers\JsonSerializer'
     ];
 
     /**
@@ -84,6 +85,7 @@ class EventListener
             $socket->setSockOpt(\ZMQ::SOCKOPT_SUBSCRIBE, $address);
         }
         $socket->confirmed($this->options['confirmed']);
+        $socket->setSerializer(new $this->options['serializer']);
 
         return $this->socket = $socket;
     }
