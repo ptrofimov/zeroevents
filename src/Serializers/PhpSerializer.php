@@ -8,7 +8,7 @@ class PhpSerializer implements SerializerInterface
     /**
      * @inheritdoc
      */
-    public function encode(array $payload)
+    public function serialize(array $payload)
     {
         return array_map(function ($value) {
             return serialize($value);
@@ -18,7 +18,7 @@ class PhpSerializer implements SerializerInterface
     /**
      * @inheritdoc
      */
-    public function decode(array $frames)
+    public function unserialize(array $frames)
     {
         return array_map(function ($frame) {
             return unserialize($frame);

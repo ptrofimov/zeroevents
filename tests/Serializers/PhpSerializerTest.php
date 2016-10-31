@@ -13,7 +13,7 @@ class PhpSerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ZeroEvents\Serializers\PhpSerializer', $this->serializer());
     }
 
-    public function testEncode()
+    public function testSerialize()
     {
         $this->assertSame(
             [
@@ -26,17 +26,17 @@ class PhpSerializerTest extends \PHPUnit_Framework_TestCase
                 's:13:"при/вет";',
                 'O:8:"stdClass":0:{}',
             ],
-            $this->serializer()->encode(
+            $this->serializer()->serialize(
                 [null, 1, true, 'string', [1, 2, 3], ['key' => 'value'], 'при/вет', new \stdClass]
             )
         );
     }
 
-    public function testDecode()
+    public function testUnserialize()
     {
         $this->assertEquals(
             [null, 1, true, 'string', [1, 2, 3], ['key' => 'value'], 'при/вет', new \stdClass],
-            $this->serializer()->decode([
+            $this->serializer()->unserialize([
                 'N;',
                 'i:1;',
                 'b:1;',

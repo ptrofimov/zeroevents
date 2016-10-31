@@ -116,7 +116,7 @@ class EventSocket extends \ZMQSocket
      */
     public function encode($event, array $payload)
     {
-        return array_merge([$event], $this->serializer->encode($payload));
+        return array_merge([$event], $this->serializer->serialize($payload));
     }
 
     /**
@@ -129,7 +129,7 @@ class EventSocket extends \ZMQSocket
     {
         return [
             'event' => array_shift($frames),
-            'payload' => $this->serializer->decode($frames)
+            'payload' => $this->serializer->unserialize($frames)
         ];
     }
 }

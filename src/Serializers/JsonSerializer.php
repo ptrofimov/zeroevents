@@ -8,7 +8,7 @@ class JsonSerializer implements SerializerInterface
     /**
      * @inheritdoc
      */
-    public function encode(array $payload)
+    public function serialize(array $payload)
     {
         return array_map(function ($value) {
             return json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -18,7 +18,7 @@ class JsonSerializer implements SerializerInterface
     /**
      * @inheritdoc
      */
-    public function decode(array $frames)
+    public function unserialize(array $frames)
     {
         return array_map(function ($frame) {
             return json_decode($frame, true);

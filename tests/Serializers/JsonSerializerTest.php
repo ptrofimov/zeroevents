@@ -13,7 +13,7 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ZeroEvents\Serializers\JsonSerializer', $this->serializer());
     }
 
-    public function testEncode()
+    public function testSerialize()
     {
         $this->assertSame(
             [
@@ -26,17 +26,17 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
                 '"при/вет"',
                 '{}',
             ],
-            $this->serializer()->encode(
+            $this->serializer()->serialize(
                 [null, 1, true, 'string', [1, 2, 3], ['key' => 'value'], 'при/вет', new \stdClass]
             )
         );
     }
 
-    public function testDecode()
+    public function testUnserialize()
     {
         $this->assertSame(
             [null, 1, true, 'string', [1, 2, 3], ['key' => 'value'], 'при/вет', []],
-            $this->serializer()->decode([
+            $this->serializer()->unserialize([
                 'null',
                 '1',
                 'true',

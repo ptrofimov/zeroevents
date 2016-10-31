@@ -9,12 +9,12 @@ interface SerializerInterface
      * @param array $payload
      * @return array
      */
-    public function encode(array $payload);
+    public function serialize(array $payload);
     /**
      * Unserialize message frames in json
      *
      * @param array $frames
      * @return array
      */
-    public function decode(array $frames);
+    public function unserialize(array $frames);
 }
