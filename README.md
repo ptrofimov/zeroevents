@@ -1,7 +1,7 @@
 zeroevents
 ==========
 
-[![Latest Stable Version](https://poser.pugx.org/ptrofimov/zeroevents/v/stable)](https://packagist.org/packages/ptrofimov/zeroevents) [![Total Downloads](https://poser.pugx.org/ptrofimov/zeroevents/downloads)](https://packagist.org/packages/ptrofimov/zeroevents)  [![License](https://poser.pugx.org/ptrofimov/zeroevents/license)](https://packagist.org/packages/ptrofimov/zeroevents)
+[![Latest Stable Version](https://poser.pugx.org/ptrofimov/zeroevents/v/stable)](https://packagist.org/packages/ptrofimov/zeroevents) [![Total Downloads](https://poser.pugx.org/ptrofimov/zeroevents/downloads)](https://packagist.org/packages/ptrofimov/zeroevents)  [![License](https://poser.pugx.org/ptrofimov/zeroevents/license)](https://packagist.org/packages/ptrofimov/zeroevents) [![Build Status](https://travis-ci.org/Olden/zeroevents.svg?branch=travis-ci)](https://travis-ci.org/Olden/zeroevents)
 
 Events between processes. Built on top of Illuminate\Events and ZeroMQ.
 
@@ -50,7 +50,7 @@ plus it adds methods for sending and receiving events with ZeroMQ.
 
 * **encode**(string *event*, array *payload*) - serialize event and payload into array of frames before sending
  * event goes as string in the first frame of message
- * payload is serialized in JSON and goes in the following frames of message
+ * payload is serialized in JSON(by default) and goes in the following frames of message
  * encode method is used in **push** method
 * **decode**(array *frames*) - unserialize event and payload from array of frames after receiving
  * return array [event, payload]
@@ -166,6 +166,12 @@ $options = [
          */
 
         'confirmed' => false,
+
+        /*
+        * Serializer Interface through which message payload is serialized before sending
+        */
+
+        'serializer' => 'ZeroEvents\Serializers\JsonSerializer'
     ],
 ];
 ```

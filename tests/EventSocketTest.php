@@ -4,6 +4,7 @@ namespace ZeroEvents;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Facade;
+use ZeroEvents\Serializers\JsonSerializer;
 
 class EventSocketTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,6 +25,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         $socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 1000)
             ->setSockOpt(\ZMQ::SOCKOPT_SNDTIMEO, 1000)
             ->setSockOpt(\ZMQ::SOCKOPT_RCVTIMEO, 1000);
+        $socket->setSerializer(new JsonSerializer);
 
         return $socket;
     }
