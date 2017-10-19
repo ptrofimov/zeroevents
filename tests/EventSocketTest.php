@@ -1,4 +1,5 @@
 <?php
+
 namespace ZeroEvents;
 
 use Illuminate\Container\Container;
@@ -21,7 +22,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
      */
     public function socket($type = null)
     {
-        $socket = new EventSocket(new \ZMQContext(1, false), $type ? : \ZMQ::SOCKET_DEALER);
+        $socket = new EventSocket(new \ZMQContext(1, false), $type ?: \ZMQ::SOCKET_DEALER);
         $socket->setSockOpt(\ZMQ::SOCKOPT_LINGER, 1000)
             ->setSockOpt(\ZMQ::SOCKOPT_SNDTIMEO, 1000)
             ->setSockOpt(\ZMQ::SOCKOPT_RCVTIMEO, 1000);
@@ -87,7 +88,8 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
 
     public function testPushPull()
     {
-        $dsn = 'ipc://test-push-pull.ipc';
+        $tmpDir = sys_get_temp_dir();
+        $dsn = "ipc://$tmpDir/test-push-pull.ipc";
 
         if (!$pid = pcntl_fork()) {
             $socket = $this->socket();
@@ -116,12 +118,13 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         );
 
         posix_kill($pid, SIGKILL);
-        @unlink('test-push-pull.ipc');
+        @unlink("$tmpDir/test-push-pull.ipc");
     }
 
     public function testPushPullConfirmed()
     {
-        $dsn = 'ipc://test-push-pull-confirmed.ipc';
+        $tmpDir = sys_get_temp_dir();
+        $dsn = "ipc://$tmpDir/test-push-pull-confirmed.ipc";
 
         if (!$pid = pcntl_fork()) {
             $socket = $this->socket();
@@ -148,12 +151,13 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         );
 
         posix_kill($pid, SIGKILL);
-        @unlink('test-push-pull-confirmed.ipc');
+        @unlink("$tmpDir/test-push-pull-confirmed.ipc");
     }
 
     public function testDealerRouterConfirmed()
     {
-        $dsn = 'ipc://test-dealer-router-confirmed.ipc';
+        $tmpDir = sys_get_temp_dir();
+        $dsn = "ipc://$tmpDir/test-dealer-router-confirmed.ipc";
 
         if (!$pid = pcntl_fork()) {
             $socket = $this->socket(\ZMQ::SOCKET_ROUTER);
@@ -180,12 +184,13 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         );
 
         posix_kill($pid, SIGKILL);
-        @unlink('test-dealer-router-confirmed.ipc');
+        @unlink("$tmpDir/test-dealer-router-confirmed.ipc");
     }
 
     public function testPullAndFire()
     {
-        $dsn = 'ipc://test-pull-and-fire.ipc';
+        $tmpDir = sys_get_temp_dir();
+        $dsn = "ipc://$tmpDir/test-pull-and-fire.ipc";
 
         if (!$pid = pcntl_fork()) {
             $socket = $this->socket();
@@ -221,7 +226,7 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         );
 
         posix_kill($pid, SIGKILL);
-        @unlink('test-pull-and-fire.ipc');
+        @unlink("$tmpDir/test-pull-and-fire.ipc");
     }
 
     public function testPushError()
@@ -244,7 +249,8 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
     public function testPullError()
     {
         $socket = $this->socket();
-        $socket->connect('ipc://test-pull-error.ipc');
+        $tmpDir = sys_get_temp_dir();
+        $socket->connect("ipc://$tmpDir/test-pull-error.ipc");
 
         Event::listen('zeroevents.pull.error', function ($object) use ($socket) {
             $this->assertSame($socket, $object);
@@ -258,7 +264,8 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
 
     public function testRouter()
     {
-        $dsn = 'ipc://test-router.ipc';
+        $tmpDir = sys_get_temp_dir();
+        $dsn = "ipc://$tmpDir/test-router.ipc";
 
         if (!$pid = pcntl_fork()) {
             $socket = $this->socket(\ZMQ::SOCKET_ROUTER);
@@ -277,6 +284,6 @@ class EventSocketTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(!empty($event['payload'][0]));
 
         posix_kill($pid, SIGKILL);
-        @unlink('test-router.ipc');
+        @unlink("$tmpDir/test-router.ipc");
     }
 }

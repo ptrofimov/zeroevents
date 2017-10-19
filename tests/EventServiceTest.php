@@ -1,4 +1,5 @@
 <?php
+
 namespace ZeroEvents;
 
 use Illuminate\Container\Container;
@@ -16,7 +17,8 @@ class EventServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testRun()
     {
-        $dsn = 'ipc://test-run.ipc';
+        $tmpDir = sys_get_temp_dir();
+        $dsn = "ipc://$tmpDir/test-run.ipc";
 
         if (!$pid = pcntl_fork()) {
 
@@ -53,6 +55,7 @@ class EventServiceTest extends \PHPUnit_Framework_TestCase
     public function testRunIdle()
     {
         $idle = 0;
+        $tmpDir = sys_get_temp_dir();
 
         Event::listen('zeroevents.service.idle', function () use (&$idle) {
             if (++$idle >= 3) {
@@ -63,7 +66,7 @@ class EventServiceTest extends \PHPUnit_Framework_TestCase
         $t1 = microtime(true);
 
         (new EventService)
-            ->listen(new EventListener(['bind' => 'ipc://test-run-idle.ipc']))
+            ->listen(new EventListener(['bind' => "ipc://$tmpDir/test-run-idle.ipc"]))
             ->pollTimeout(400)
             ->run();
 
@@ -73,11 +76,12 @@ class EventServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testListenToSignals()
     {
+        $tmpDir = sys_get_temp_dir();
         $t1 = microtime(true);
 
         if (!$pid = pcntl_fork()) {
             (new EventService)
-                ->listen(new EventListener(['bind' => 'ipc://test-listen-to-signals.ipc']))
+                ->listen(new EventListener(['bind' => "ipc://$tmpDir/test-listen-to-signals.ipc"]))
                 ->listenToSignals()
                 ->run();
             exit;

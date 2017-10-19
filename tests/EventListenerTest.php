@@ -1,4 +1,5 @@
 <?php
+
 namespace ZeroEvents;
 
 use Illuminate\Container\Container;
@@ -39,15 +40,17 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testConnect()
     {
+        $tmpDir = sys_get_temp_dir();
+
         $listener = new EventListener([
             'socket_type' => \ZMQ::SOCKET_PUSH,
             'socket_options' => [
                 \ZMQ::SOCKOPT_SNDHWM => 2000,
             ],
-            'bind' => 'ipc://test-connect-bind.ipc',
+            'bind' => "ipc://$tmpDir/test-connect-bind.ipc",
             'connect' => [
-                'ipc://test-connect-1.ipc',
-                'ipc://test-connect-2.ipc',
+                "ipc://$tmpDir/test-connect-1.ipc",
+                "ipc://$tmpDir/test-connect-2.ipc",
             ],
             'confirmed' => true,
         ]);
@@ -58,11 +61,11 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(
             [
                 'connect' => [
-                    'ipc://test-connect-1.ipc',
-                    'ipc://test-connect-2.ipc',
+                    "ipc://$tmpDir/test-connect-1.ipc",
+                    "ipc://$tmpDir/test-connect-2.ipc",
                 ],
                 'bind' => [
-                    'ipc://test-connect-bind.ipc'
+                    "ipc://$tmpDir/test-connect-bind.ipc"
                 ],
             ],
             $socket->getEndpoints()
@@ -72,7 +75,8 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testInvoke()
     {
-        $dsn = 'ipc://test-invoke.ipc';
+        $tmpDir = sys_get_temp_dir();
+        $dsn = "ipc://$tmpDir/test-invoke.ipc";
 
         if (!$pid = pcntl_fork()) {
             $socket = (new EventListener(['bind' => $dsn]))->socket();
@@ -100,6 +104,6 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
         );
 
         posix_kill($pid, SIGKILL);
-        @unlink('test-invoke.ipc');
+        @unlink("$tmpDir/test-invoke.ipc");
     }
 }
